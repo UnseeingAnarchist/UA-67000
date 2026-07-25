@@ -60,6 +60,19 @@ async def on_presence_update(before, after):
                     print("user found in the list of a stalker.")
                     await stalker_obj.send(f"{after.name} is now online, you crazy stalker!")
                     print("the dm has been sent.")
+        
+@bot.event
+async def on_user_update(before, after):
+    if before.display_name != after.display_name:
+        for stalker in stalkers:
+            if after.id in stalkers[stalker]:
+                stalker_obj = bot.get_user(stalker)
+                await stalker_obj.send(f'{after.name} has changed their display name, you crazy stalker!')
+    if before.avatar != after.avatar:
+        for stalker in stalkers:
+            if after.id in stalkers[stalker]:
+                stalker_obj = bot.get_user(stalker)
+                await stalker_obj.send(f'{after.name} has changed their avatar, you crazy stalker!')
             
 
 @bot.command()
