@@ -15,7 +15,6 @@ class StalkingManager():
         if before.status != after.status:
             print("statis has actually changed.")
             if after.status == discord.Status.online:
-                await bot.process_commands()
                 print("user is online.")
                 for stalker in self.stalkers:
                     stalker_obj = bot.get_user(stalker)
@@ -69,3 +68,18 @@ class StalkingManager():
                     await ctx.send(f"You are currently not stalking {ctx.message.mentions[0].name}")
         else:
             await ctx.send("You are not currently stalking anyone")
+        self.save()
+    async def list_command(self, ctx, bot):
+        stalker = ctx.author.id
+        list_str = f"{ctx.author.mention} is stalking the following users:\n"
+        if stalker in self.stalkers:
+            if len(self.stalkers[stalker]) > 0:
+                for target in self.stalkers[stalker]:
+                    target_obj = bot.get_user(target)
+                    list_str += f"{target_obj.display_name}\n"
+                list_str += "You really are a crazy stalker after all!"
+                await ctx.send(list_str)
+            else:
+                await ctx.send(f"{ctx.author.mention} is not currently stalking anyone! Good for them!")
+        else:
+            await ctx.send(f"{ctx.author.mention} is not even a registered stalker!")

@@ -49,5 +49,8 @@ async def stalk(ctx):
 async def unstalk(ctx):
     await stalking_manager.unstalk_command(ctx, bot)
 
+@bot.command()
+async def stalking(ctx):
+    await stalking_manager.list_command(ctx, bot)
         
 bot.run(token=token, log_handler=handler, log_level=logging.DEBUG)
