@@ -1,17 +1,25 @@
 import discord
 import json
+import time
 
 class StalkingManager():
     def __init__(self, stalkers_json):
         self.stalkers_json = stalkers_json
+        self.cooldowns = {}
         with open(self.stalkers_json, 'r') as stalkers_file:
             self.stalkers = json.load(stalkers_file)
         self.stalkers = {int(key): value for key, value in self.stalkers.items()}
     async def notify_stalkers(self, message, user_obj, bot):
+        current_time = time.time()
         for stalker in self.stalkers:
             stalker_obj = bot.get_user(stalker)
+            if stalker in self.cooldowns:
+                if current_time - self.cooldowns[stalker] < 10:
+                    print(f'Dm failed because {stalker_obj.display_name} is still on cooldown')
+                    continue
             if user_obj.id in self.stalkers[stalker]:
                 print("user found in the list of a stalker.")
+                self.cooldowns[stalker] = current_time
                 await stalker_obj.send(message)
                 print("the dm has been sent.")    
     def save(self):
