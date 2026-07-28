@@ -7,6 +7,13 @@ class StalkingManager():
         with open(self.stalkers_json, 'r') as stalkers_file:
             self.stalkers = json.load(stalkers_file)
         self.stalkers = {int(key): value for key, value in self.stalkers.items()}
+    async def notify_stalkers(self, message, user_obj, bot):
+        for stalker in self.stalkers:
+            stalker_obj = bot.get_user(stalker)
+            if user_obj.id in self.stalkers[stalker]:
+                print("user found in the list of a stalker.")
+                await stalker_obj.send(message)
+                print("the dm has been sent.")    
     def save(self):
         with open(self.stalkers_json, 'w') as stalkers_file:
             json.dump(self.stalkers, stalkers_file, indent=4)
@@ -16,23 +23,18 @@ class StalkingManager():
             print("statis has actually changed.")
             if after.status == discord.Status.online:
                 print("user is online.")
-                for stalker in self.stalkers:
-                    stalker_obj = bot.get_user(stalker)
-                    if after.id in self.stalkers[stalker]:
-                        print("user found in the list of a stalker.")
-                        await stalker_obj.send(f"{after.name} is now online, you crazy stalker!")
-                        print("the dm has been sent.")
+                await self.notify_stalkers(f'{after.display_name} is online, you crazy stalker!', after, bot)
+                if after.activity != None:
+                    if after.activity.name == 'Minecraft':
+                        await self.notify_stalkers(f'{after.display_name} is playing {after.activity.name}, you crazy stalker', after, bot)
+                    if after.activity.name == 'VRChat':
+                        await self.notify_stalkers(f'{after.display_name} is playing {after.activity.name}, you crazy stalker', after, bot)
+                    
     async def check_profile_changes(self, before, after, bot):
         if before.display_name != after.display_name:
-            for stalker in self.stalkers:
-                if after.id in self.stalkers[stalker]:
-                    stalker_obj = bot.get_user(stalker)
-                    await stalker_obj.send(f'{after.name} has changed their display name, you crazy stalker!')
+            await self.notify_stalkers(f'{before.display_name} has changed their display name to {after.display_name}, you crazy stalker!', after, bot)
         if before.avatar != after.avatar:
-            for stalker in self.stalkers:
-                if after.id in self.stalkers[stalker]:
-                    stalker_obj = bot.get_user(stalker)
-                    await stalker_obj.send(f'{after.name} has changed their avatar, you crazy stalker!')
+            await self.notify_stalkers(f'{after.display_name} has changed their avatar, you crazy stalker!', after, bot)
     async def stalk_command(self, ctx, bot):
         if len(ctx.message.mentions) == 0:
             await ctx.send("You need to mension someone to watch, you crazy stalker!")

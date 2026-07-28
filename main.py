@@ -30,8 +30,12 @@ async def on_ready():
 @bot.event
 async def on_message(message):
     print("On message fired, piggy.")
-    await counting_manager.run(message, bot)
-    await bot.process_commands(message)
+    if not message.author.bot:
+        print("The author was not a bot")
+        await counting_manager.run(message, bot)
+        await bot.process_commands(message)
+    else:
+        print("The author of this message was a bot")
 
 @bot.event
 async def on_presence_update(before, after):
