@@ -46,7 +46,7 @@ class StalkingManager():
                 self.stalkers[stalker] = []
             if target not in self.stalkers[stalker]:
                 self.stalkers[stalker].append(target)
-                await ctx.send(f"{ctx.author.name} is now stalking {ctx.message.mentions[0].name}")
+                await ctx.send(f"{ctx.author.display_name} is now stalking {ctx.message.mentions[0].display_name}")
             else:
                 await ctx.send("You are already stalking this user!")
 
@@ -65,9 +65,9 @@ class StalkingManager():
                 target = ctx.message.mentions[0].id
                 if target in self.stalkers[stalker]:
                     self.stalkers[stalker].remove(target)
-                    await ctx.send(f"You are no longer stalking {ctx.message.mentions[0].name}!")
+                    await ctx.send(f"{ctx.author.display_name} is no longer stalking {ctx.message.mentions[0].display_name}!")
                 else:
-                    await ctx.send(f"You are currently not stalking {ctx.message.mentions[0].name}")
+                    await ctx.send(f"You are currently not stalking {ctx.message.mentions[0].display_name}")
         else:
             await ctx.send("You are not currently stalking anyone")
         self.save()
