@@ -9,12 +9,12 @@ class StalkingManager():
         with open(self.stalkers_json, 'r') as stalkers_file:
             self.stalkers = json.load(stalkers_file)
         self.stalkers = {int(key): value for key, value in self.stalkers.items()}
-    async def notify_stalkers(self, message, user_obj, bot):
+    async def notify_stalkers(self, message, user_obj, bot, event='online'):
         current_time = time.time()
         for stalker in self.stalkers:
             stalker_obj = bot.get_user(stalker)
             if stalker in self.cooldowns:
-                if current_time - self.cooldowns[stalker] < 10:
+                if current_time - self.cooldowns[stalker] < 1:
                     print(f'Dm failed because {stalker_obj.display_name} is still on cooldown')
                     continue
             if user_obj.id in self.stalkers[stalker]:
@@ -34,9 +34,9 @@ class StalkingManager():
                 await self.notify_stalkers(f'{after.display_name} is online, you crazy stalker!', after, bot)
                 if after.activity != None:
                     if after.activity.name == 'Minecraft':
-                        await self.notify_stalkers(f'{after.display_name} is playing {after.activity.name}, you crazy stalker', after, bot)
+                        await self.notify_stalkers(f'{after.display_name} is playing {after.activity.name}, you crazy stalker', after, bot, 'minecraft')
                     if after.activity.name == 'VRChat':
-                        await self.notify_stalkers(f'{after.display_name} is playing {after.activity.name}, you crazy stalker', after, bot)
+                        await self.notify_stalkers(f'{after.display_name} is playing {after.activity.name}, you crazy stalker', after, bot, 'vrchat')
                     
     async def check_profile_changes(self, before, after, bot):
         if before.display_name != after.display_name:
